@@ -11,6 +11,7 @@ from typing import Optional
 import typer
 import json
 from termcolor import colored
+from guardrail_identifiers import *
 
 def _create_boto_session():
     profile_name = os.environ.get("AWS_PROFILE", False)
@@ -24,7 +25,7 @@ def _create_boto_session():
     return session
 
 session = _create_boto_session()
-console = Console()
+console = Console(record=True)
 ct_client = session.client("controltower")
 
 def get_boto_session():
@@ -167,7 +168,7 @@ def print_error_panel(text):
     panel = Panel(
         text,
         title="[red][bold]ERROR",
-        title_align="center",
+        title_align="left",
         expand=True,
     )
     console.print(panel)

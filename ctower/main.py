@@ -3,9 +3,10 @@ from rich.traceback import install
 from guardrail_identifiers import *
 import cli
 from utils import *
+from rich.terminal_theme import MONOKAI
+import os
 
 install(show_locals=True)
-
 
 
 session = get_boto_session()
@@ -62,8 +63,15 @@ def run_app():
     console.print("kloia/ctower v.0.1", style="blue on white", justify="center")
     print_boto_region_and_profile()
     console.print()
-    app()
-
+    try:
+        app()
+    except Exception as e:
+        raise e
+    finally:
+        console.save_svg("output.svg", theme=MONOKAI)
+        import webbrowser
+        x = f"file://{os.path.realpath('output.svg')}"
+        print(x)
 
 if __name__ == "__main__":
     run_app()
