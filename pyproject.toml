@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ctower"
-version = "0.0.8"
+version = "0.1.0"
 description = "CLI application for managing AWS Control Tower for your AWS Organization."
 authors = ["Oguzhan Yilmaz <oguzhanylmz271@gmail.com>"]
 readme = "README.md"
@@ -17,11 +17,10 @@ ctower = "ctower.main:run_app"
 [tool.poetry.dependencies]
 python = "^3.7"
 boto3 = "^1.24.66"
-typer = "^0.6.1"
 termcolor = "^2.0.1"
 tabulate = "^0.8.10"
 rich = "^12.5.1"
-
+typer = "^0.6.1"
 
 [build-system]
 requires = ["poetry-core"]
