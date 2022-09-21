@@ -175,27 +175,28 @@ STRONGLY_RECOMMENDED_GUARDRAILS = [
     },
 ]
 
-ALL_GUARDRAILS = (
-    ELECTIVE_GUARDRAILS + DATA_RESIDENCY_GUARDRAILS + STRONGLY_RECOMMENDED_GUARDRAILS
-)
-
 MANDATORY_CONTROL_TOWER_GUARDRAILS = [
-    {"id": "AWS-GR_CLOUDTRAIL_CHANGE_PROHIBITED", "text": ""},
-    {"id": "AWS-GR_CLOUDTRAIL_CLOUDWATCH_LOGS_ENABLED", "text": ""},
-    {"id": "AWS-GR_CLOUDTRAIL_ENABLED", "text": ""},
-    {"id": "AWS-GR_CLOUDTRAIL_VALIDATION_ENABLED", "text": ""},
-    {"id": "AWS-GR_CLOUDWATCH_EVENTS_CHANGE_PROHIBITED", "text": ""},
-    {"id": "AWS-GR_CONFIG_AGGREGATION_AUTHORIZATION_POLICY", "text": ""},
-    {"id": "AWS-GR_CONFIG_AGGREGATION_CHANGE_PROHIBITED", "text": ""},
-    {"id": "AWS-GR_CONFIG_CHANGE_PROHIBITED", "text": ""},
-    {"id": "AWS-GR_CONFIG_ENABLED", "text": ""},
-    {"id": "AWS-GR_CONFIG_RULE_CHANGE_PROHIBITED", "text": ""},
-    {"id": "AWS-GR_IAM_ROLE_CHANGE_PROHIBITED", "text": ""},
-    {"id": "AWS-GR_LAMBDA_CHANGE_PROHIBITED", "text": ""},
-    {"id": "AWS-GR_LOG_GROUP_POLICY", "text": ""},
-    {"id": "AWS-GR_SNS_CHANGE_PROHIBITED", "text": ""},
-    {"id": "AWS-GR_SNS_SUBSCRIPTION_CHANGE_PROHIBITED", "text": ""},
+    {"id": "AWS-GR_CLOUDTRAIL_CHANGE_PROHIBITED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_CLOUDTRAIL_CLOUDWATCH_LOGS_ENABLED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_CLOUDTRAIL_ENABLED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_CLOUDTRAIL_VALIDATION_ENABLED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_CLOUDWATCH_EVENTS_CHANGE_PROHIBITED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_CONFIG_AGGREGATION_AUTHORIZATION_POLICY", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_CONFIG_AGGREGATION_CHANGE_PROHIBITED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_CONFIG_CHANGE_PROHIBITED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_CONFIG_ENABLED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_CONFIG_RULE_CHANGE_PROHIBITED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_IAM_ROLE_CHANGE_PROHIBITED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_LAMBDA_CHANGE_PROHIBITED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_LOG_GROUP_POLICY", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_SNS_CHANGE_PROHIBITED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
+    {"id": "AWS-GR_SNS_SUBSCRIPTION_CHANGE_PROHIBITED", "text": "Mandatory GuardRail Control, enabled by default on Control Tower activation."},
 ]
+
+
+ALL_GUARDRAILS = (
+    ELECTIVE_GUARDRAILS + DATA_RESIDENCY_GUARDRAILS + STRONGLY_RECOMMENDED_GUARDRAILS + MANDATORY_CONTROL_TOWER_GUARDRAILS
+)
 
 
 NON_CONTROL_TOWER_GUARDRAILS = [

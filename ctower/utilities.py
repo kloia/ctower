@@ -11,7 +11,8 @@ from typing import Optional
 import typer
 import json
 from termcolor import colored
-from guardrail_identifiers import *
+from . import guardrail_identifiers
+
 
 def _create_boto_session():
     profile_name = os.environ.get("AWS_PROFILE", False)
@@ -24,15 +25,19 @@ def _create_boto_session():
     session = boto3.session.Session(**_kwargs_dict)
     return session
 
+
 session = _create_boto_session()
 console = Console(record=True)
 ct_client = session.client("controltower")
 
+
 def get_boto_session():
     return session
 
+
 def get_rich_console():
     return console
+
 
 def get_control_tower_client():
     return ct_client
@@ -94,6 +99,9 @@ def get_organizational_units():
             organizational_units.extend(ous)
     return organizational_units
 
+def get_control_id_from_control_identifier(control_identifier):
+    prev_arn, control_id = control_identifier.rsplit("/", 1)
+    return control_id
 
 def _list_enabled_controls(organizational_unit_arn):
     try:
@@ -102,7 +110,9 @@ def _list_enabled_controls(organizational_unit_arn):
             "list_enabled_controls",
             kwargs={"targetIdentifier": organizational_unit_arn},
         )
-        return response.get("enabledControls", [])
+        enabled_controls = response.get("enabledControls", [])
+        enabled_control_identifiers = [ec.get("controlIdentifier") for ec in enabled_controls]
+        return enabled_control_identifiers
     except ct_client.exceptions.ResourceNotFoundException as e:
         console.print(
             Panel(
@@ -115,7 +125,6 @@ def _list_enabled_controls(organizational_unit_arn):
         raise typer.Exit()
 
 
-
 def find_organizational_unit_by_id_or_name(id_or_name: str):
     organizational_units = get_organizational_units()
     for o_u in organizational_units:
@@ -125,28 +134,13 @@ def find_organizational_unit_by_id_or_name(id_or_name: str):
 
 
 def find_guardrail_control_by_id(control_id):
-    for gr_control in ALL_GUARDRAILS:
+    for gr_control in guardrail_identifiers.ALL_GUARDRAILS:
         if gr_control.get("id") == control_id:
             return gr_control
     return False
 
 
-def check_control_tower_available_on_region():
-    available_services = session.get_available_services()
-    return "controltower" in available_services
 
-
-def sanity_checks():
-    if not check_control_tower_available_on_region():
-        console.print(
-            Panel(
-                f"[bold]Control Tower is not enabled on the {AWS_REGION_NAME}. Aborting...",
-                title="[red][bold]ERROR",
-                title_align="center",
-                expand=True,
-            )
-        )
-        raise typer.Exit()
 
 
 
@@ -163,7 +157,6 @@ def _get_control_operation(operation_identifier):
     return response.get("controlOperation", False)
 
 
-
 def print_error_panel(text):
     panel = Panel(
         text,
@@ -173,6 +166,7 @@ def print_error_panel(text):
     )
     console.print(panel)
     return panel
+
 
 def print_success_panel(text):
     panel = Panel(

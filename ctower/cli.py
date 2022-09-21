@@ -7,8 +7,8 @@ from functools import lru_cache
 from rich.prompt import Confirm
 from rich.console import Group
 
-from guardrail_identifiers import *
-from utils import (
+from . import guardrail_identifiers
+from .utilities import (
     get_boto_session,
     find_guardrail_control_by_id,
     get_organizational_units,
@@ -27,15 +27,16 @@ ct_client = get_control_tower_client()
 AWS_REGION_NAME = session.region_name
 
 
-apply_app = typer.Typer(no_args_is_help=True)
-remove_app = typer.Typer(no_args_is_help=True)
-ls_app = typer.Typer(no_args_is_help=True)
-controls_app = typer.Typer(no_args_is_help=True)
+apply_app = typer.Typer(no_args_is_help=True, help=f"Enables GuardRail Controls on Organizational Units.")
+remove_app = typer.Typer(no_args_is_help=True, help=f"Disables a GuardRail Control on an Organizational Unit.")
+ls_app = typer.Typer(no_args_is_help=True, help="Lists Organizational Units, GuardRail controls and enabled controls for an OU.")
+controls_app = typer.Typer(no_args_is_help=True, help="List available GuardRail Controls.")
 ls_app.add_typer(controls_app, name="controls")
 
 
 def _print_list_of_guardrails(guardrail_list, header, do_print=True):
-    table = Table(title=f"[bold]{header}", title_style="white on black")
+    """Prints the given list of GuardRail Controls."""
+    table = Table(title=f"[bold]{header}", title_style="black on white")
     table.add_column(
         "[bold]ControlTower GuardRail Identifiers",
         justify="left",
@@ -53,13 +54,14 @@ def _print_list_of_guardrails(guardrail_list, header, do_print=True):
 
 @ls_app.command("enabled-controls")
 def list_enabled_controls_for_organizational_unit(
-    organizational_unit: str = typer.Option(
-        ...,
-        "--organizational-unit",
-        "-ou",
-        help="ID or Name of Organizational Unit to list its enabled controls. Try: `ls organizational-units` command",
-    )
-):
+        organizational_unit: str = typer.Option(
+            ...,
+            "--organizational-unit",
+            "-ou",
+            help="ID or Name of Organizational Unit to list its enabled controls. Try: `ls organizational-units` command",
+        )
+    ):
+    """CLI Command to list enabled controls for given organizational-unit"""
     # get details of the given organizational unit
     o_unit = find_organizational_unit_by_id_or_name(organizational_unit)
     if not o_unit:
@@ -70,7 +72,7 @@ def list_enabled_controls_for_organizational_unit(
     organizational_unit_id = o_unit.get("Id")
     organizational_unit_name = o_unit.get("Name")
 
-    enabled_controls = _list_enabled_controls(organizational_unit_arn)
+    enabled_control_identifiers = _list_enabled_controls(organizational_unit_arn)
 
     table = Table(
         title=f"[bold]Enabled GuardRail Controls for O.U. [blue]{organizational_unit_name}[/] ([green]{organizational_unit_id}[/])",
@@ -81,11 +83,7 @@ def list_enabled_controls_for_organizational_unit(
         justify="left",
     )
 
-    enabled_control_identifiers = [
-        ec.get("controlIdentifier") for ec in enabled_controls
-    ]
     for eci in enabled_control_identifiers:
-
         before, after = eci.rsplit("/", 1)
 
         table.add_row(f"[white]{before}/[bold][blue]{after}")
@@ -94,11 +92,12 @@ def list_enabled_controls_for_organizational_unit(
 
 @ls_app.command("organizational-units")
 def _list_ous():
+    """Lists organizational units on the current accounts AWS Organization"""
     organizational_units = get_organizational_units()
     if not organizational_units:
         raise typer.Exit("No organizational units found!")
 
-    table = Table(title=f"[bold]Organizational Units", title_style="white on black")
+    table = Table(title=f"[bold]Organizational Units", title_style="black on white")
     table.add_column("[bold]Name", justify="left", style="green", no_wrap=True)
     table.add_column("[bold]Identifier", justify="center", style="white", no_wrap=True)
     table.add_column("[bold]ARN", justify="center", style="cyan", no_wrap=True)
@@ -113,19 +112,21 @@ def _list_ous():
 
 @apply_app.command("strongly-recommended")
 def _apply_strongly_recommended_controls(
-    organizational_unit: str = typer.Option(
-        ...,
-        "--organizational-unit",
-        "-ou",
-        help="ID or Name of Organizational Unit to apply GuardRail controls. Try: `ls organizational-units` command",
-    )
-):
-    control_id_list = [_.get("id") for _ in STRONGLY_RECOMMENDED_GUARDRAILS]
+        organizational_unit: str = typer.Option(
+            ...,
+            "--organizational-unit",
+            "-ou",
+            help="ID or Name of Organizational Unit to apply GuardRail controls. Try: `ls organizational-units` command",
+        )
+    ):
+    """Applies `Strongly Recommended` GuardRail Controls to specified Organizational Unit."""
+    control_id_list = [_.get("id") for _ in guardrail_identifiers.STRONGLY_RECOMMENDED_GUARDRAILS]
     _apply_list_of_controls_to_organizational_unit(organizational_unit, control_id_list)
 
 
 @controls_app.command("all")
 def _list_all_guardrails():
+    """Lists all available GuardRail Controls."""
     _list_strongly_recommended_guardrails()
     _list_elective_guardrails()
     _list_data_residency_guardrails()
@@ -133,18 +134,24 @@ def _list_all_guardrails():
 
 @controls_app.command("elective")
 def _list_elective_guardrails():
-    _print_list_of_guardrails(ELECTIVE_GUARDRAILS, "ELECTIVE GUARDRAILS")
+    """Lists Elective GuardRail Controls."""
+    
+    _print_list_of_guardrails(guardrail_identifiers.ELECTIVE_GUARDRAILS, "ELECTIVE GUARDRAILS")
 
 
 @controls_app.command("data-residency")
 def _list_data_residency_guardrails():
-    _print_list_of_guardrails(DATA_RESIDENCY_GUARDRAILS, "DATA RESIDENCY GUARDRAILS")
+    """Lists Data Residency GuardRail Controls."""
+    
+    _print_list_of_guardrails(guardrail_identifiers.DATA_RESIDENCY_GUARDRAILS, "DATA RESIDENCY GUARDRAILS")
 
 
 @controls_app.command("strongly-recommended")
 def _list_strongly_recommended_guardrails():
+    """Lists Strongly Recommended GuardRail Controls."""
+    
     _print_list_of_guardrails(
-        STRONGLY_RECOMMENDED_GUARDRAILS, "STRONGLY RECOMMENDED GUARDRAILS"
+        guardrail_identifiers.STRONGLY_RECOMMENDED_GUARDRAILS, "STRONGLY RECOMMENDED GUARDRAILS"
     )
 
 
@@ -163,6 +170,7 @@ def _apply_control_to_organizational_unit_command(
         help="Control Identifier. Try: `ls controls all` command",
     ),
 ):
+    """Applies the specified GuardRail Control to the given Organizational Unit."""
     is_applied = _apply_control_to_organizational_unit(organizational_unit, control_id)
 
 
@@ -181,7 +189,9 @@ def _remove_control_from_organizational_unit_command(
         help="Control Identifier. Try: `ls controls all` command",
     ),
 ):
-    is_applied = _remove_control_from_organizational_unit(
+    """Removes the specified GuardRail Control from the given Organizational Unit."""
+    
+    is_removed = _remove_control_from_organizational_unit(
         organizational_unit, control_id
     )
 
@@ -196,7 +206,7 @@ def _remove_control_from_organizational_unit(
         )
         raise typer.Exit()
 
-    control_arn = generate_guardrail_arn(control_id, AWS_REGION_NAME)
+    control_arn = guardrail_identifiers.generate_guardrail_arn(control_id, AWS_REGION_NAME)
     control_panel = Panel(
         f"\n[bold]{control_dict.get('text')}\n",
         title=f"Selected Control: [blue][bold]{control_id}",
@@ -264,7 +274,7 @@ def _apply_control_to_organizational_unit(
             f"Given Control ID: [blue][bold]{control_id}[/][/] is not found in the list. Try: [cyan]`ls controls all`[/] command"
         )
         raise typer.Exit()
-    control_arn = generate_guardrail_arn(control_id, AWS_REGION_NAME)
+    control_arn = guardrail_identifiers.generate_guardrail_arn(control_id, AWS_REGION_NAME)
 
     control_panel = Panel(
         f"\n[bold]{control_dict.get('text')}\n",
@@ -332,8 +342,13 @@ def _apply_control_to_organizational_unit(
     # console.print(Panel(table, f"sadasda") )
 
 
+def diff_enabled_controls_and_control_list(control_list):
+    
+    pass
 def _apply_list_of_controls_to_organizational_unit(ou_name_or_id, control_id_list):
-    # TODO
+    # TODO: ask for prompt
+    
+    
     for control_id in control_id_list:
         _apply_control_to_organizational_unit(
             ou_name_or_id, control_id, ask_for_prompt=False

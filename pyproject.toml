@@ -1,12 +1,21 @@
 [tool.poetry]
 name = "ctower"
-version = "0.1.0"
-description = ""
-authors = ["Oguzhan Yilmaz <oguzhan@kloia.com>"]
+version = "0.0.8"
+description = "CLI application for managing AWS Control Tower for your AWS Organization."
+authors = ["Oguzhan Yilmaz <oguzhanylmz271@gmail.com>"]
 readme = "README.md"
+license = "Apache-2.0"
+homepage = "https://github.com/kloia/ctower"
+repository = "https://github.com/kloia/ctower"
+keywords = ["aws", "organization", "control tower", "organizational unit"]
+
+
+
+[tool.poetry.scripts]
+ctower = "ctower.main:run_app"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.7"
 boto3 = "^1.24.66"
 typer = "^0.6.1"
 termcolor = "^2.0.1"

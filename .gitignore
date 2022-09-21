@@ -1,2 +1,4 @@
 ctower/__pycache__
 tests/
+dist
+.vscode
