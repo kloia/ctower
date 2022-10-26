@@ -256,3 +256,20 @@ $ ctower sync [OPTIONS]
 * `-fou, --from-organizational-unit TEXT`: ID or Name of Organizational Unit to get the controls from.  [required]
 * `-tou, --to-organizational-unit TEXT`: ID or Name of Organizational Unit to apply GuardRail controls to.  [required]
 * `--help`: Show this message and exit.
+
+**Screenshots**:
+* List Organizational Units for current Organization
+<img width="711" alt="image" src="https://user-images.githubusercontent.com/8745804/198024275-d161267b-77e6-4423-9331-5c9623580006.png">
+* List available GuardRails Controls
+<img width="807" alt="image" src="https://user-images.githubusercontent.com/8745804/198024342-315494be-41b8-4554-bf29-067cbd0d9504.png">
+* List enabled GuardRails for Organizational Unit
+<img width="557" alt="image" src="https://user-images.githubusercontent.com/8745804/198024674-b5a684b3-a4b8-494c-8382-1f710b053083.png">
+* Apply a GuardRail Control to Organizational Unit
+<img width="780" alt="image" src="https://user-images.githubusercontent.com/8745804/198024762-5d515c3e-2530-4986-9170-66231793e597.png">
+* Remove a GuardRail Control from Organizational Unit
+<img width="808" alt="image" src="https://user-images.githubusercontent.com/8745804/198024853-03af540d-96a6-487f-8dbc-2982b99d06f2.png">
+* Mirror Controls from OU to another OU
+<img width="824" alt="image" src="https://user-images.githubusercontent.com/8745804/198024941-cd30fa95-d3b2-491e-9299-b9a930a4e597.png">
+
+
+
