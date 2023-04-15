@@ -174,6 +174,25 @@ def _apply_control_to_organizational_unit_command(
     is_applied = _apply_control_to_organizational_unit(organizational_unit, control_id)
 
 
+@apply_app.command("control-from-file")
+def _apply_control_to_organizational_unit_from_file(
+    organizational_unit: str = typer.Option(
+        ...,
+        "--organizational-unit",
+        "-ou",
+        help="ID or Name of Organizational Unit to get the controls from.",
+    ),
+    control_id_file: str = typer.Option(
+        ...,
+        "--control-id-file",
+        "-cidf",
+        help="Path to the file containing Control Identifiers, one per line.",
+    ),
+):
+    """Applies GuardRail Controls specified in a file to the given Organizational Unit."""
+    control_ids = _read_control_ids_from_file(control_id_file)
+    _apply_list_of_controls_to_organizational_unit(organizational_unit, control_ids)
+
 @remove_app.command("control")
 def _remove_control_from_organizational_unit_command(
     organizational_unit: str = typer.Option(
@@ -195,6 +214,11 @@ def _remove_control_from_organizational_unit_command(
         organizational_unit, control_id
     )
 
+
+def _read_control_ids_from_file(file_path):
+    with open(file_path, "r") as file:
+        control_ids = file.read().splitlines()
+    return control_ids
 
 def _remove_control_from_organizational_unit(
     ou_name_or_id, control_id, ask_for_prompt=True
