@@ -123,6 +123,30 @@ def _apply_strongly_recommended_controls(
     control_id_list = [_.get("id") for _ in guardrail_identifiers.STRONGLY_RECOMMENDED_GUARDRAILS]
     _apply_list_of_controls_to_organizational_unit(organizational_unit, control_id_list)
 
+@apply_app.command("control-from-file")
+def _apply_control_to_organizational_unit_from_file(
+    organizational_unit: str = typer.Option(
+        ...,
+        "--organizational-unit",
+        "-ou",
+        help="ID or Name of Organizational Unit to get the controls from.",
+    ),
+    control_id_file: str = typer.Option(
+        ...,
+        "--control-id-file",
+        "-cidf",
+        help="Path to the file containing Control Identifiers, one per line.",
+    ),
+):
+    """Applies GuardRail Controls specified in a file to the given Organizational Unit."""
+    control_ids = _read_control_ids_from_file(control_id_file)
+    _apply_list_of_controls_to_organizational_unit(organizational_unit, control_ids)
+
+
+def _read_control_ids_from_file(file_path):
+    with open(file_path, "r") as file:
+        control_ids = file.read().splitlines()
+    return control_ids
 
 @controls_app.command("all")
 def _list_all_guardrails():

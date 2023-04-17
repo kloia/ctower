@@ -81,7 +81,6 @@ def get_current_organization():
     # print(json.dumps(response, indent=2, default=str))
     return response.get("Organization", False)
 
-
 @lru_cache(maxsize=None)
 def get_organizational_units():
     client = session.client("organizations")
@@ -138,11 +137,6 @@ def find_guardrail_control_by_id(control_id):
         if gr_control.get("id") == control_id:
             return gr_control
     return False
-
-
-
-
-
 
 def _get_control_operation(operation_identifier):
     try:
